@@ -1,4 +1,4 @@
-package com.vitalapps.bikemaps.api.request;
+package com.vitalapps.bikemaps.api;
 
 import android.content.Context;
 

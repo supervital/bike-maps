@@ -3,7 +3,7 @@ package com.vitalapps.bikemaps.app;
 import android.app.Application;
 import android.content.Context;
 
-import com.vitalapps.bikemaps.api.request.RequestManager;
+import com.vitalapps.bikemaps.api.RequestManager;
 import com.vitalapps.bikemaps.service.AppServiceHelper;
 import com.vitalapps.bikemaps.service.AppServiceHelperImpl;
 
