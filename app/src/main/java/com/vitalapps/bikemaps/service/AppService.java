@@ -154,6 +154,7 @@ public class AppService extends Service {
     ServiceListener mProcessorListener = new ServiceListener() {
         @Override
         public void onProcessFinished(int processId, Bundle args) {
+            LOGD(TAG, "onProcessFinished id = " + Integer.toString(processId));
             notifyListener(processId, args);
         }
     };

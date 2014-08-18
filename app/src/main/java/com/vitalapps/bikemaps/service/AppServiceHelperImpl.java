@@ -1,6 +1,6 @@
 package com.vitalapps.bikemaps.service;
 
-import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 
 import com.vitalapps.bikemaps.processor.BaseProcessor;
@@ -9,10 +9,27 @@ import com.vitalapps.bikemaps.processor.ParkingProcessor;
 
 public class AppServiceHelperImpl implements AppServiceHelper {
 
-    private Application mApp;
+    private static AppServiceHelperImpl instance;
+    private Context mContext;
 
-    public AppServiceHelperImpl(Application app) {
-        mApp = app;
+    public AppServiceHelperImpl(Context context) {
+        mContext = context;
+    }
+
+    // This method should be called first to do singleton initialization
+    public static synchronized AppServiceHelperImpl getInstance(Context context) {
+        if (instance == null) {
+            instance = new AppServiceHelperImpl(context);
+        }
+        return instance;
+    }
+
+    public static synchronized AppServiceHelperImpl getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException(AppServiceHelperImpl.class.getSimpleName() +
+                    " is not initialized, call getInstance(context) method first.");
+        }
+        return instance;
     }
 
 
@@ -32,18 +49,18 @@ public class AppServiceHelperImpl implements AppServiceHelper {
 
     @Override
     public int parkingProcess() {
-        Intent intent = createExecutableServiceIntent(new ParkingProcessor(mApp),
+        Intent intent = createExecutableServiceIntent(new ParkingProcessor(),
                 PROCESS_PARKING);
         startService(intent);
         return PROCESS_PARKING;
     }
 
     private void startService(Intent intent) {
-        mApp.startService(intent);
+        mContext.startService(intent);
     }
 
     private Intent createCancelableServiceIntent(int processId) {
-        Intent intent = new Intent(mApp, AppService.class);
+        Intent intent = new Intent(mContext, AppService.class);
         intent.setAction(AppService.ACTION_CANCEL_PROCESS);
         intent.putExtra(AppService.EXTRA_PROCESS_ID, processId);
         return intent;
@@ -51,7 +68,7 @@ public class AppServiceHelperImpl implements AppServiceHelper {
 
     private Intent createExecutableServiceIntent(BaseProcessor baseProcess,
                                                  int processId) {
-        Intent intent = new Intent(mApp, AppService.class);
+        Intent intent = new Intent(mContext, AppService.class);
         intent.setAction(AppService.ACTION_EXECUTE_PROCESS);
         intent.putExtra(AppService.EXTRA_PROCESS, baseProcess);
         intent.putExtra(AppService.EXTRA_PROCESS_ID, processId);

@@ -1,6 +1,5 @@
 package com.vitalapps.bikemaps.processor;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,15 +10,18 @@ import com.vitalapps.bikemaps.api.VolleyRequestManager;
 import com.vitalapps.bikemaps.service.AppServiceHelper;
 import com.vitalapps.bikemaps.service.ServiceListener;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
+
+import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
+import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
 
 public class ParkingProcessor extends BaseProcessor {
 
-    private Context mContext;
+    private static final String TAG = makeLogTag("ParkingProc");
+
     private Request mParkingRequest;
 
-    public ParkingProcessor(Context context) {
-        mContext = context;
+    public ParkingProcessor() {
     }
 
     public ParkingProcessor(Parcel in) {
@@ -28,21 +30,25 @@ public class ParkingProcessor extends BaseProcessor {
 
     @Override
     public void executeProcess(final ServiceListener listener) {
-        mParkingRequest = VolleyRequestManager.getInstance().doVolleyRequest().getParking(mContext, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        getBundle().putInt(BUNDLE_PROCESS_STATUS, PROCESS_FINISHED);
-                        listener.onProcessFinished(AppServiceHelper.PROCESS_PARKING, getBundle());
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        getBundle().putInt(BUNDLE_PROCESS_STATUS, PROCESS_FAIL);
-                        listener.onProcessFinished(AppServiceHelper.PROCESS_PARKING, getBundle());
-                    }
-                }
-        );
+        LOGD(TAG, "execute");
+        setProcessStatus(PROCESS_STARTED);
+        mParkingRequest = VolleyRequestManager.getInstance().doVolleyRequest().getParking(new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                LOGD(TAG, "onResponse");
+                setProcessStatus(PROCESS_FINISHED);
+                getBundle().putInt(BUNDLE_PROCESS_STATUS, PROCESS_SUCCESS);
+                listener.onProcessFinished(AppServiceHelper.PROCESS_PARKING, getBundle());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                LOGD(TAG, "VolleyError " + error.getMessage());
+                setProcessStatus(PROCESS_FINISHED);
+                getBundle().putInt(BUNDLE_PROCESS_STATUS, PROCESS_FAIL);
+                listener.onProcessFinished(AppServiceHelper.PROCESS_PARKING, getBundle());
+            }
+        });
     }
 
     @Override

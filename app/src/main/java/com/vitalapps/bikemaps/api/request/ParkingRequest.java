@@ -2,15 +2,14 @@ package com.vitalapps.bikemaps.api.request;
 
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.vitalapps.bikemaps.data.AppSQLiteOpenHelper;
+import com.android.volley.toolbox.JsonRequest;
+import com.vitalapps.bikemaps.api.Api;
 import com.vitalapps.bikemaps.data.DatabaseManager;
 import com.vitalapps.bikemaps.data.DatabaseParams;
 import com.vitalapps.bikemaps.data.DatabaseQueries;
@@ -25,33 +24,22 @@ import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGE;
 import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
 
-public class ParkingRequest extends Request<String> {
+public class ParkingRequest extends JsonRequest<JSONArray> {
 
     private static final String TAG = makeLogTag("ParkingRequest");
 
-    private Response.Listener mListener;
-    private Context mContext;
 
-    public ParkingRequest(Context context, int method, String url, Response.Listener listener, Response.ErrorListener errorListener) {
-        super(method, url, errorListener);
-        mContext = context;
-        mListener = listener;
+    public ParkingRequest(Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+        super(Method.GET, Api.getParkingList(), null, listener, errorListener);
         setShouldCache(false);
     }
 
-
     @Override
-    protected void deliverResponse(String response) {
-        mListener.onResponse(response);
-    }
-
-    @Override
-    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+    protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
         String json = new String(response.data);
         LOGD(TAG, "Result is: " + json);
         try {
             final JSONArray parkingJsonArray = new JSONArray(json);
-            DatabaseManager.initializeInstance(new AppSQLiteOpenHelper(mContext));
             DatabaseManager.getInstance().executeQuery(new QueryExecutor() {
                 @Override
                 public void run(SQLiteDatabase database) {
@@ -71,7 +59,7 @@ public class ParkingRequest extends Request<String> {
                     }
                 }
             });
-            return Response.success("", null);
+            return Response.success(new JSONArray(), null);
         } catch (JSONException e) {
             LOGE(TAG, e.getMessage());
             return Response.error(new ParseError(e));

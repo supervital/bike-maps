@@ -38,9 +38,9 @@ public class AppBinder extends Binder {
 
     public boolean notifyListeners(int processId, Bundle args) {
         if (mServiceListeners != null && mServiceListeners.get(processId) != null) {
+            LOGD(TAG, "Notify a listener with key " + Integer.toString(processId));
             mServiceListeners.get(processId).onProcessFinished(processId, args);
             mServiceListeners.remove(processId);
-            LOGD(TAG, "Notify a listener with key " + Integer.toString(processId));
             return true;
         } else {
             return false;

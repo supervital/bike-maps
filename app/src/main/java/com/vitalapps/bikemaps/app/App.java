@@ -4,7 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.vitalapps.bikemaps.api.VolleyRequestManager;
-import com.vitalapps.bikemaps.service.AppServiceHelper;
+import com.vitalapps.bikemaps.data.AppSQLiteOpenHelper;
+import com.vitalapps.bikemaps.data.DatabaseManager;
 import com.vitalapps.bikemaps.service.AppServiceHelperImpl;
 
 
@@ -12,14 +13,13 @@ public class App extends Application {
 
     public static final String PACKAGE = "com.vitalapps.bikemaps";
 
-    private AppServiceHelper mAppServiceHelper;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        mAppServiceHelper = new AppServiceHelperImpl(this);
-        // Initialize the Volley
+        // Initialize
         VolleyRequestManager.getInstance(getApplicationContext());
+        AppServiceHelperImpl.getInstance(getApplicationContext());
+        DatabaseManager.initializeInstance(new AppSQLiteOpenHelper(getApplicationContext()));
     }
 
     public static App getApplication(Context context) {
@@ -29,8 +29,5 @@ public class App extends Application {
         return (App) context.getApplicationContext();
     }
 
-    public AppServiceHelper getServiceHelper() {
-        return mAppServiceHelper;
-    }
 
 }

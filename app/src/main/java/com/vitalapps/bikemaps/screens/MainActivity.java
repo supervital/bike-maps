@@ -1,6 +1,5 @@
 package com.vitalapps.bikemaps.screens;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +18,15 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.vitalapps.bikemaps.R;
 import com.vitalapps.bikemaps.data.models.UserModel;
-import com.vitalapps.bikemaps.screens.fragments.SplashFrgament;
+import com.vitalapps.bikemaps.screens.fragments.LocationMapFragment;
 import com.vitalapps.bikemaps.screens.fragments.UserFragment;
+import com.vitalapps.bikemaps.service.AppServiceHelperImpl;
+import com.vitalapps.bikemaps.service.ServiceListener;
+import static com.vitalapps.bikemaps.utils.LogUtils.*;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends ServiceBasedActivity {
 
+    private static final String TAG = makeLogTag("MainAct");
     private static final String USER_SKIPPED_LOGIN_KEY = "user_skipped_login";
 
     private boolean mIsResumed = false;
@@ -57,11 +60,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+                LOGD(TAG, "onDrawerClosed");
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                LOGD(TAG, "onDrawerOpened");
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -79,6 +84,16 @@ public class MainActivity extends BaseActivity {
         super.onPause();
         mUiHelper.onPause();
         mIsResumed = false;
+    }
+
+    @Override
+    public ServiceListener getServiceListener() {
+        return new ServiceListener() {
+            @Override
+            public void onProcessFinished(int processId, Bundle args) {
+                LOGD(TAG, "onProcessFinished id = " + Integer.toString(processId));
+            }
+        };
     }
 
     @Override
@@ -114,6 +129,9 @@ public class MainActivity extends BaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            // Do call
+            LOGD(TAG, "start load");
+            addListenerToQueue(AppServiceHelperImpl.getInstance().parkingProcess());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -122,9 +140,10 @@ public class MainActivity extends BaseActivity {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (mIsResumed) {
             if (state.equals(SessionState.OPENED)) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
                 profileRequest(session);
             } else if (state.isClosed()) {
-                addFragment(R.id.fl_container, new SplashFrgament(), "", false, false);
+                addFragment(R.id.fl_container, new LocationMapFragment(), "", false, false);
             }
         }
     }

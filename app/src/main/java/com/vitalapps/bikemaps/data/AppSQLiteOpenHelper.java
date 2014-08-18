@@ -6,17 +6,22 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.vitalapps.bikemaps.api.request.ParkingRequest;
 
+import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
+
 public class AppSQLiteOpenHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "SQLiteOpenHelper";
     private static final String DATABASE_NAME = "bike_maps";
     private static final int DATABASE_VERSION = 1;
 
     public AppSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        LOGD(TAG, "AppSQLiteOpenHelper");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        LOGD(TAG, "onCreate");
         db.execSQL(ParkingRequest.Parking.TABLE_PARKING);
     }
 

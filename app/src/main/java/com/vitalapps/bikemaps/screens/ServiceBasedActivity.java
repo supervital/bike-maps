@@ -22,9 +22,9 @@ public abstract class ServiceBasedActivity extends BaseActivity {
 
     private ArrayList<Integer> mListenerQueue;
 
-    public AppBinder mBinder;
+    private AppBinder mBinder;
+    private boolean mIsBound;
     public String mClassHash;
-    public boolean mIsBound;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -41,7 +41,7 @@ public abstract class ServiceBasedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        mClassHash = "[" + Integer.toString(this.hashCode()) + "]";
+        mClassHash = "[" + Integer.toString(this.hashCode()) + "]";
         if (savedInstanceState != null) {
             mListenerQueue = savedInstanceState
                     .getIntegerArrayList(EXTRA_QUEUE);
@@ -103,12 +103,14 @@ public abstract class ServiceBasedActivity extends BaseActivity {
         }
         if (!mListenerQueue.contains(processId)) {
             mListenerQueue.add(processId);
+            mBinder.addServiceListener(processId, getServiceListener());
         }
     }
 
     public void removeListenerFromQueue(int processId) {
         if (mListenerQueue != null) {
             mListenerQueue.remove(processId);
+            mBinder.removeServiceListener(processId);
         }
     }
 

@@ -3,13 +3,12 @@ package com.vitalapps.bikemaps.api;
 import android.content.Context;
 
 import com.android.volley.Request;
-import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.vitalapps.bikemaps.api.request.ParkingRequest;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 public class RequestApi {
 
@@ -21,9 +20,8 @@ public class RequestApi {
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
-    public Request getParking(Context context, Response.Listener<JSONObject> listener,
-                           Response.ErrorListener errorListener) {
-        return mRequestQueue.add((new ParkingRequest(context, Method.GET, Api.getParkingList(), listener, errorListener)).setTag(PARKING_TAG));
+    public Request getParking(Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+        return mRequestQueue.add((new ParkingRequest(listener, errorListener)).setTag(PARKING_TAG));
     }
 
 }
