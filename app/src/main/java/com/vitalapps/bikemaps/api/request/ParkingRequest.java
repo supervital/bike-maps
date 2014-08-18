@@ -12,6 +12,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.vitalapps.bikemaps.data.AppSQLiteOpenHelper;
 import com.vitalapps.bikemaps.data.DatabaseManager;
+import com.vitalapps.bikemaps.data.DatabaseParams;
+import com.vitalapps.bikemaps.data.DatabaseQueries;
 import com.vitalapps.bikemaps.data.QueryExecutor;
 import com.vitalapps.bikemaps.utils.JSONUtils;
 
@@ -30,10 +32,10 @@ public class ParkingRequest extends Request<String> {
     private Response.Listener mListener;
     private Context mContext;
 
-    public ParkingRequest(int method, String url, Response.Listener listener, Response.ErrorListener errorListener, Context context) {
+    public ParkingRequest(Context context, int method, String url, Response.Listener listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
-        mListener = listener;
         mContext = context;
+        mListener = listener;
         setShouldCache(false);
     }
 
@@ -55,11 +57,20 @@ public class ParkingRequest extends Request<String> {
                 public void run(SQLiteDatabase database) {
                     for (int i = 0; i < parkingJsonArray.length(); i++) {
                         ContentValues contentValues = new ContentValues();
-                        contentValues.put();
+                        Parking parking = new Parking(JSONUtils.getJsonObject(parkingJsonArray, i));
+                        contentValues.put(Parking.CN_ID, parking.getId());
+                        contentValues.put(Parking.CN_TYPE, parking.getType());
+                        contentValues.put(Parking.CN_LAT, parking.getLat());
+                        contentValues.put(Parking.CN_LNG, parking.getLng());
+                        contentValues.put(Parking.CN_IMG_URL, parking.getPhotoUrl());
+                        contentValues.put(Parking.CN_DESC, parking.getDescription());
+                        DatabaseParams.Insert insert = new DatabaseParams.Insert();
+                        insert.values = contentValues;
+                        insert.table = Parking.T_NAME;
+                        DatabaseQueries.insert(database, insert);
                     }
                 }
             });
-
             return Response.success("", null);
         } catch (JSONException e) {
             LOGE(TAG, e.getMessage());
@@ -72,7 +83,7 @@ public class ParkingRequest extends Request<String> {
         public static final String T_NAME = "parking";
         public static final String CN_ID = "parkingid";
         public static final String CN_TYPE = "type";
-        public static final String CN_LONG = "lng";
+        public static final String CN_LNG = "lng";
         public static final String CN_LAT = "lat";
         public static final String CN_IMG_URL = "photourl";
         public static final String CN_DESC = "description";
@@ -82,7 +93,7 @@ public class ParkingRequest extends Request<String> {
                 + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + CN_ID + " INTEGER,"
                 + CN_TYPE + " INTEGER,"
-                + CN_LONG + " TEXT,"
+                + CN_LNG + " TEXT,"
                 + CN_LAT + " TEXT,"
                 + CN_IMG_URL + " TEXT,"
                 + CN_DESC + " TEXT);";

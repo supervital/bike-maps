@@ -9,15 +9,13 @@ import android.os.IBinder;
 
 import com.vitalapps.bikemaps.service.AppBinder;
 import com.vitalapps.bikemaps.service.AppService;
-import com.vitalapps.bikemaps.service.AppServiceHelper;
 import com.vitalapps.bikemaps.service.ServiceListener;
 
 import java.util.ArrayList;
 
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 
-public class ServiceBasedActivity extends BaseActivity implements
-        ServiceListener {
+public abstract class ServiceBasedActivity extends BaseActivity {
 
     private static final String TAG = "ServiceBasedActivity";
     private static final String EXTRA_QUEUE = "EXTRA_QUEUE";
@@ -55,7 +53,7 @@ public class ServiceBasedActivity extends BaseActivity implements
         super.onPause();
         LOGD(TAG, mClassHash + "onPause");
         if (mBinder != null) {
-            mBinder.removeServiceListener(AppServiceHelper.EXAMPLE_PROCESS);
+            mBinder.removeAllServiceListeners();
         }
     }
 
@@ -85,10 +83,9 @@ public class ServiceBasedActivity extends BaseActivity implements
             LOGD(TAG, mClassHash + "onServiceConnected");
             mBinder = (AppBinder) binder;
             mIsBound = true;
-            if (mListenerQueue != null && mListenerQueue.size() > 0) {
+            if (mListenerQueue != null && mListenerQueue.size() > 0 && getServiceListener()!= null) {
                 for (Integer processId : mListenerQueue) {
-                    mBinder.addServiceListener(processId,
-                            ServiceBasedActivity.this);
+                    mBinder.addServiceListener(processId, getServiceListener());
                 }
             }
         }
@@ -99,10 +96,6 @@ public class ServiceBasedActivity extends BaseActivity implements
             mIsBound = false;
         }
     };
-
-    @Override
-    public void onTaskFinished(int taskKey, Bundle args) {
-    }
 
     public void addListenerToQueue(int processId) {
         if (mListenerQueue == null) {
@@ -119,4 +112,5 @@ public class ServiceBasedActivity extends BaseActivity implements
         }
     }
 
+    public abstract ServiceListener getServiceListener();
 }

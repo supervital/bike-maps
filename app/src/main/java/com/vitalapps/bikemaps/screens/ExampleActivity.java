@@ -3,10 +3,11 @@ package com.vitalapps.bikemaps.screens;
 import android.os.Bundle;
 
 import com.vitalapps.bikemaps.R;
+import com.vitalapps.bikemaps.service.ServiceListener;
 
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 
-public class ExampleActivity extends ServiceBasedActivity {
+public class ExampleActivity extends ServiceBasedActivity implements ServiceListener{
 
 	private static final String TAG = "ExampleActivity";
 
@@ -30,10 +31,20 @@ public class ExampleActivity extends ServiceBasedActivity {
 //				});
 	}
 
-	@Override
-	public void onTaskFinished(int taskKey, Bundle args) {
-		LOGD(TAG, mClassHash + "onTaskFinished");
-//		((TextView) findViewById(R.id.tv_status)).setText("Process done id - "
-//				+ Integer.toString(taskKey));
-	}
+    @Override
+    public ServiceListener getServiceListener() {
+        return this;
+    }
+
+    @Override
+    public void onProcessFinished(int processId, Bundle args) {
+
+    }
+
+//	@Override
+//	public void onTaskFinished(int taskKey, Bundle args) {
+//		LOGD(TAG, mClassHash + "onTaskFinished");
+////		((TextView) findViewById(R.id.tv_status)).setText("Process done id - "
+////				+ Integer.toString(taskKey));
+//	}
 }

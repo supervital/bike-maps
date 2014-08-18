@@ -2,16 +2,25 @@ package com.vitalapps.bikemaps.screens;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
 import com.vitalapps.bikemaps.R;
+import com.vitalapps.bikemaps.data.models.UserModel;
+import com.vitalapps.bikemaps.screens.fragments.SplashFrgament;
+import com.vitalapps.bikemaps.screens.fragments.UserFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -19,6 +28,9 @@ public class MainActivity extends BaseActivity {
 
     private boolean mIsResumed = false;
     private boolean mUserSkippedLogin = false;
+    private UserFragment mUserFragment;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
     private UiLifecycleHelper mUiHelper;
     private Session.StatusCallback mCallback = new Session.StatusCallback() {
         @Override
@@ -36,11 +48,23 @@ public class MainActivity extends BaseActivity {
         mUiHelper = new UiLifecycleHelper(this, mCallback);
         mUiHelper.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.f_user));
-//        fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.f_splash));
-        fragmentTransaction.commit();
+        mUserFragment = (UserFragment) fragmentManager.findFragmentById(R.id.f_user);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.hello_world, R.string.app_name) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     @Override
@@ -97,25 +121,38 @@ public class MainActivity extends BaseActivity {
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (mIsResumed) {
-            FragmentManager fragmentManager = getFragmentManager();
-            Fragment splashFragment = fragmentManager.findFragmentById(R.id.f_splash);
-            Fragment userFragment = fragmentManager.findFragmentById(R.id.f_user);
             if (state.equals(SessionState.OPENED)) {
-                showFragment(splashFragment, userFragment, false);
+                profileRequest(session);
             } else if (state.isClosed()) {
-                showFragment(userFragment, splashFragment, false);
+                addFragment(R.id.fl_container, new SplashFrgament(), "", false, false);
             }
         }
     }
 
-    private void showFragment(Fragment showFragment, Fragment hideFragment, boolean addToBackStack) {
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction.show(showFragment);
-        transaction.hide(hideFragment);
-        if (addToBackStack) {
-            transaction.addToBackStack(null);
-        }
-        transaction.commit();
+    private void profileRequest(final Session session) {
+        // Make an API call to get user data and define a
+        // new callback to handle the response.
+        Request request = Request.newMeRequest(session,
+                new Request.GraphUserCallback() {
+                    @Override
+                    public void onCompleted(GraphUser user, Response response) {
+                        // If the response is successful
+                        if (session == Session.getActiveSession()) {
+                            if (user != null) {
+                                UserModel userModel = new UserModel();
+                                userModel.setUserId(user.getId());
+                                userModel.setUserFirstName(user.getFirstName());
+                                userModel.setUserLastName(user.getLastName());
+                                mUserFragment.setUser(userModel);
+                            }
+                        }
+                        if (response.getError() != null) {
+                            // Handle errors, will do so later.
+                        }
+                    }
+                }
+        );
+        request.executeAsync();
     }
+
 }

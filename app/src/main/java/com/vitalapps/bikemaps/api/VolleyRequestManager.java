@@ -2,30 +2,30 @@ package com.vitalapps.bikemaps.api;
 
 import android.content.Context;
 
-public class RequestManager {
+public class VolleyRequestManager {
 
-    private static RequestManager instance;
+    private static VolleyRequestManager instance;
     private RequestApi mRequestApi;
 
-    private RequestManager(Context context) {
+    private VolleyRequestManager(Context context) {
         mRequestApi = new RequestApi(context);
     }
 
-    public RequestApi doRequest() {
+    public RequestApi doVolleyRequest() {
         return mRequestApi;
     }
 
     // This method should be called first to do singleton initialization
-    public static synchronized RequestManager getInstance(Context context) {
+    public static synchronized VolleyRequestManager getInstance(Context context) {
         if (instance == null) {
-            instance = new RequestManager(context);
+            instance = new VolleyRequestManager(context);
         }
         return instance;
     }
 
-    public static synchronized RequestManager getInstance() {
+    public static synchronized VolleyRequestManager getInstance() {
         if (instance == null) {
-            throw new IllegalStateException(RequestManager.class.getSimpleName() +
+            throw new IllegalStateException(VolleyRequestManager.class.getSimpleName() +
                     " is not initialized, call getInstance(context) method first.");
         }
         return instance;

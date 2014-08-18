@@ -3,7 +3,7 @@ package com.vitalapps.bikemaps.app;
 import android.app.Application;
 import android.content.Context;
 
-import com.vitalapps.bikemaps.api.RequestManager;
+import com.vitalapps.bikemaps.api.VolleyRequestManager;
 import com.vitalapps.bikemaps.service.AppServiceHelper;
 import com.vitalapps.bikemaps.service.AppServiceHelperImpl;
 
@@ -18,7 +18,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mAppServiceHelper = new AppServiceHelperImpl(this);
-        RequestManager.getInstance(getApplicationContext());
+        // Initialize the Volley
+        VolleyRequestManager.getInstance(getApplicationContext());
     }
 
     public static App getApplication(Context context) {

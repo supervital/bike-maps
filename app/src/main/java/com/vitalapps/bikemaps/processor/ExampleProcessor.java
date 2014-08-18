@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.vitalapps.bikemaps.service.ServiceListener;
+
 public class ExampleProcessor extends BaseProcessor {
 
 	private static final String TAG = makeLogTag("ExamplePro");
@@ -18,18 +20,23 @@ public class ExampleProcessor extends BaseProcessor {
 	public ExampleProcessor() {
 	}
 
-	@Override
-	public void executeProcess() {
-		for (int i = 0; i < 20; i++) {
-			try {
-				TimeUnit.SECONDS.sleep(2);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			LOGD(TAG, "Pro - " + Integer.toString(i));
-		}
-	}
+    @Override
+    public void executeProcess(ServiceListener listener) {
+
+    }
+
+//	@Override
+//	public void executeProcess() {
+//		for (int i = 0; i < 20; i++) {
+//			try {
+//				TimeUnit.SECONDS.sleep(2);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			LOGD(TAG, "Pro - " + Integer.toString(i));
+//		}
+//	}
 
 	@Override
 	public void cancelProcess() {
