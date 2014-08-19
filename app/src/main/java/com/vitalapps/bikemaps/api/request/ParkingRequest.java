@@ -101,11 +101,11 @@ public class ParkingRequest extends JsonRequest<JSONArray> {
         }
 
         public String getLat() {
-            return Long.toString(JSONUtils.getLong(jsonObject, "Lat"));
+            return JSONUtils.getString(jsonObject, "Lat");
         }
 
         public String getLng() {
-            return Long.toString(JSONUtils.getLong(jsonObject, "Lng"));
+            return JSONUtils.getString(jsonObject, "Lat");
         }
 
         public String getPhotoUrl() {

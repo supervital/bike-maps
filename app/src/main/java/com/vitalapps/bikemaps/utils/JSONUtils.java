@@ -83,6 +83,15 @@ public class JSONUtils {
         }
     }
 
+    public static double getDouble(JSONObject jsonObj, String param) {
+        try {
+            return jsonObj.getDouble(param);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return DEFAULT_INT_VALUE;
+        }
+    }
+
     public static boolean getBool(JSONObject jsonObj, String param, boolean defaultValue) {
         try {
             return jsonObj.getBoolean(param);

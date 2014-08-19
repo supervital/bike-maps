@@ -19,7 +19,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vitalapps.bikemaps.api.request.ParkingRequest;
-import com.vitalapps.bikemaps.data.loadres.ParkingLoader;
+import com.vitalapps.bikemaps.data.loadres.SQLiteCursorLoader;
 
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
@@ -33,6 +33,7 @@ public class LocationMapFragment extends MapFragment implements
 
     private static final String TAG = makeLogTag("Map");
 
+
     private LocationClient mLocationClient;
     // These settings are the same as the settings for the map. They will in fact give you updates
     // at the maximal rates currently possible.
@@ -43,12 +44,14 @@ public class LocationMapFragment extends MapFragment implements
 
     // Default radius
     private static final int DEFAULT_RADIUS_VALUE = 5;
+    private static final String EXTRA_CURSOR_FLAG = "";
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         GoogleMap map = getMap();
         if (map != null) {
+
             map.setMyLocationEnabled(true);
             map.setOnMapLoadedCallback(this);
         }
@@ -73,7 +76,7 @@ public class LocationMapFragment extends MapFragment implements
     public void onMapLoaded() {
         // init parking
         LOGD(TAG, "Init parking loader");
-        getLoaderManager().initLoader(ParkingLoader.PARKING, null, this);
+        getLoaderManager().initLoader(SQLiteCursorLoader.LOADER_PARKING, null, this);
     }
 
     @Override
@@ -104,16 +107,22 @@ public class LocationMapFragment extends MapFragment implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         LOGD(TAG, "Create parking cursor");
-        return new ParkingLoader(getActivity());
+        return new SQLiteCursorLoader(getActivity(), "SELECT * FROM " + ParkingRequest.Parking.T_NAME, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         LOGD(TAG, "Cursor load finished");
         if (cursor != null && getMap() != null) {
-            while (cursor.moveToNext()) {
-                long lat = Long.parseLong(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT)));
-                long lng = Long.parseLong(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG)));
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                LOGD(TAG, String.valueOf(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT))));
+                LOGD(TAG, String.valueOf(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG))));
+
+                LOGD(TAG, "AFTER ");
+                long lat = (long) Double.parseDouble(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT)));
+                long lng = (long) Double.parseDouble(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG)));
+                LOGD(TAG, String.valueOf(lat));
+                LOGD(TAG, String.valueOf(lng));
                 String parkingName = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_DESC));
                 getMap().addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(parkingName));
             }
@@ -133,5 +142,4 @@ public class LocationMapFragment extends MapFragment implements
                     this); // OnConnectionFailedListener
         }
     }
-
 }

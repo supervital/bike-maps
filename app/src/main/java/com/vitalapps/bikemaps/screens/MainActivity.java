@@ -133,6 +133,8 @@ public class MainActivity extends ServiceBasedActivity {
             LOGD(TAG, "start load");
             addListenerToQueue(AppServiceHelperImpl.getInstance().parkingProcess());
             return true;
+        } else if (id == R.id.action_run) {
+            addFragment(R.id.fl_container, new LocationMapFragment(), "", false, false);
         }
         return super.onOptionsItemSelected(item);
     }

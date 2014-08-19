@@ -5,7 +5,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
+import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
+
 public class DatabaseManager {
+
+    private static final String TAG = makeLogTag(DatabaseManager.class);
 
     private AtomicInteger mOpenCounter = new AtomicInteger();
 
@@ -19,6 +24,7 @@ public class DatabaseManager {
 
     public static synchronized void initializeInstance(SQLiteOpenHelper helper) {
         if (instance == null) {
+            LOGD(TAG, "initialize db manager");
             instance = new DatabaseManager(helper);
         }
     }
@@ -33,21 +39,30 @@ public class DatabaseManager {
 
     private synchronized SQLiteDatabase openDatabase() {
         if (mOpenCounter.incrementAndGet() == 1) {
-            // Opening new database
+            LOGD(TAG, "Opening new writable database");
             mDatabase = mDatabaseHelper.getWritableDatabase();
         }
         return mDatabase;
     }
 
-    private synchronized void closeDatabase() {
+    public synchronized SQLiteDatabase openReadableDatabase() {
+        if (mOpenCounter.incrementAndGet() == 1) {
+            LOGD(TAG, "Opening new readable database");
+            mDatabase = mDatabaseHelper.getReadableDatabase();
+        }
+        return mDatabase;
+    }
+
+    public synchronized void closeDatabase() {
         if (mOpenCounter.decrementAndGet() == 0) {
-            // Closing database
+            LOGD(TAG, "Close database");
             mDatabase.close();
 
         }
     }
 
     public void executeQuery(QueryExecutor executor) {
+        LOGD(TAG, "Execute query");
         SQLiteDatabase database = openDatabase();
         executor.run(database);
         closeDatabase();
@@ -57,6 +72,7 @@ public class DatabaseManager {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                LOGD(TAG, "Execute async query");
                 SQLiteDatabase database = openDatabase();
                 executor.run(database);
                 closeDatabase();
