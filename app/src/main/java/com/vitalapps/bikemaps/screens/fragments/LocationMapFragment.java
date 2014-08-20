@@ -43,8 +43,7 @@ public class LocationMapFragment extends MapFragment implements
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     // Default radius
-    private static final int DEFAULT_RADIUS_VALUE = 5;
-    private static final String EXTRA_CURSOR_FLAG = "";
+    private static final int DEFAULT_RADIUS_VALUE = 50;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -94,7 +93,7 @@ public class LocationMapFragment extends MapFragment implements
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_RADIUS_VALUE));
+//            getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_RADIUS_VALUE));
         }
     }
 
@@ -115,16 +114,19 @@ public class LocationMapFragment extends MapFragment implements
         LOGD(TAG, "Cursor load finished");
         if (cursor != null && getMap() != null) {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                LOGD(TAG, String.valueOf(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT))));
-                LOGD(TAG, String.valueOf(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG))));
-
-                LOGD(TAG, "AFTER ");
-                long lat = (long) Double.parseDouble(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT)));
-                long lng = (long) Double.parseDouble(cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG)));
-                LOGD(TAG, String.valueOf(lat));
-                LOGD(TAG, String.valueOf(lng));
+                String latString = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT)).trim();
+                String lngString = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG)).trim();
+                double lat = Double.parseDouble(latString);
+                double lng = Double.parseDouble(lngString);
                 String parkingName = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_DESC));
                 getMap().addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(parkingName));
+                if (mLocationClient != null && mLocationClient.getLastLocation() != null) {
+                    getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(mLocationClient.getLastLocation().getLatitude(),
+                                    mLocationClient.getLastLocation().getLongitude()),
+                            getZoomLevel(DEFAULT_RADIUS_VALUE)
+                    ));
+                }
             }
         }
     }
@@ -141,5 +143,12 @@ public class LocationMapFragment extends MapFragment implements
                     this,  // ConnectionCallbacks
                     this); // OnConnectionFailedListener
         }
+    }
+
+    private float getZoomLevel(int radius) {
+        float zoomLevel = (float) (14 - Math.log(radius) / Math.log(2));
+        LOGD(TAG, "Radius is " + Integer.toString(radius));
+        LOGD(TAG, "Zoom Level is " + Float.toString(zoomLevel));
+        return zoomLevel;
     }
 }

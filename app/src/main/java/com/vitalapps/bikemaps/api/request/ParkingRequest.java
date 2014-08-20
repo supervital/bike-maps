@@ -43,6 +43,9 @@ public class ParkingRequest extends JsonRequest<JSONArray> {
             DatabaseManager.getInstance().executeQuery(new QueryExecutor() {
                 @Override
                 public void run(SQLiteDatabase database) {
+                    DatabaseParams.Delete delete = new DatabaseParams.Delete();
+                    delete.table = Parking.T_NAME;
+                    DatabaseQueries.delete(database, delete);
                     for (int i = 0; i < parkingJsonArray.length(); i++) {
                         ContentValues contentValues = new ContentValues();
                         Parking parking = new Parking(JSONUtils.getJsonObject(parkingJsonArray, i));
@@ -105,7 +108,7 @@ public class ParkingRequest extends JsonRequest<JSONArray> {
         }
 
         public String getLng() {
-            return JSONUtils.getString(jsonObject, "Lat");
+            return JSONUtils.getString(jsonObject, "Lng");
         }
 
         public String getPhotoUrl() {
