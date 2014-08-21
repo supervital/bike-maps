@@ -2,9 +2,7 @@ package com.vitalapps.bikemaps.data.loadres;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteOpenHelper;
 
-import com.vitalapps.bikemaps.data.AppSQLiteOpenHelper;
 import com.vitalapps.bikemaps.data.DatabaseManager;
 
 import java.io.FileDescriptor;
@@ -20,7 +18,6 @@ public class SQLiteCursorLoader extends AbstractCursorLoader {
 
     public static final int LOADER_PARKING = 1;
 
-    SQLiteOpenHelper db = null;
     String rawQuery = null;
     String[] args = null;
 
@@ -32,7 +29,6 @@ public class SQLiteCursorLoader extends AbstractCursorLoader {
     public SQLiteCursorLoader(Context context, String rawQuery, String[] args) {
         super(context);
         LOGD(TAG, "Constructor rawQuery - " + rawQuery + ". args - " + args);
-        this.db = new AppSQLiteOpenHelper(context);
         this.rawQuery = rawQuery;
         this.args = args;
     }

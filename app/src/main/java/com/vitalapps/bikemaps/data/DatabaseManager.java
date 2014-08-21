@@ -47,7 +47,7 @@ public class DatabaseManager {
 
     public synchronized SQLiteDatabase openReadableDatabase() {
         if (mOpenCounter.incrementAndGet() == 1) {
-            LOGD(TAG, "Opening new readable database");
+            LOGD(TAG, "Opening new readable database" + mOpenCounter);
             mDatabase = mDatabaseHelper.getReadableDatabase();
         }
         return mDatabase;
@@ -55,9 +55,10 @@ public class DatabaseManager {
 
     public synchronized void closeDatabase() {
         if (mOpenCounter.decrementAndGet() == 0) {
-            LOGD(TAG, "Close database");
+            LOGD(TAG, "Close database" + mOpenCounter);
             mDatabase.close();
-
+        } else if (mOpenCounter.get() < 0) {
+            mOpenCounter.set(0);
         }
     }
 

@@ -50,7 +50,6 @@ public class LocationMapFragment extends MapFragment implements
         super.onViewCreated(view, savedInstanceState);
         GoogleMap map = getMap();
         if (map != null) {
-
             map.setMyLocationEnabled(true);
             map.setOnMapLoadedCallback(this);
         }
@@ -83,6 +82,11 @@ public class LocationMapFragment extends MapFragment implements
         mLocationClient.requestLocationUpdates(
                 REQUEST,
                 this);  // LocationListener
+//        getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
+//                new LatLng(mLocationClient.getLastLocation().getLatitude(),
+//                        mLocationClient.getLastLocation().getLongitude()),
+//                getZoomLevel(DEFAULT_RADIUS_VALUE)
+//        ));
     }
 
     @Override
@@ -120,13 +124,6 @@ public class LocationMapFragment extends MapFragment implements
                 double lng = Double.parseDouble(lngString);
                 String parkingName = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_DESC));
                 getMap().addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(parkingName));
-                if (mLocationClient != null && mLocationClient.getLastLocation() != null) {
-                    getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(mLocationClient.getLastLocation().getLatitude(),
-                                    mLocationClient.getLastLocation().getLongitude()),
-                            getZoomLevel(DEFAULT_RADIUS_VALUE)
-                    ));
-                }
             }
         }
     }
