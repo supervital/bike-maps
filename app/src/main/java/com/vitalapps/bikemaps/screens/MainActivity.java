@@ -2,10 +2,14 @@ package com.vitalapps.bikemaps.screens;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +26,11 @@ import com.vitalapps.bikemaps.screens.fragments.LocationMapFragment;
 import com.vitalapps.bikemaps.screens.fragments.UserFragment;
 import com.vitalapps.bikemaps.service.AppServiceHelperImpl;
 import com.vitalapps.bikemaps.service.ServiceListener;
+
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import static com.vitalapps.bikemaps.utils.LogUtils.*;
 
 public class MainActivity extends ServiceBasedActivity {

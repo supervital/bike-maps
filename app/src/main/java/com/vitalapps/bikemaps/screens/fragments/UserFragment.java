@@ -29,24 +29,29 @@ public class UserFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
         mProfilePictureView = (ProfilePictureView) view.findViewById(R.id.ppv_facebook_avatar);
         mUserNameView = (TextView) view.findViewById(R.id.tv_name);
-        if (getArguments() != null) {
+        if (savedInstanceState != null) {
+            mUser = savedInstanceState.getParcelable(EXTRA_USER);
             fillUserView();
         }
         return view;
     }
 
 
-    public void fillUserView() {
-        mUser = getArguments().getParcelable(EXTRA_USER);
-        mProfilePictureView.setProfileId(mUser.getUserId());
-        mUserNameView.setText(mUser.getUserFirstName());
+    private void fillUserView() {
+        if (mUser != null) {
+            mProfilePictureView.setProfileId(mUser.getUserId());
+            mUserNameView.setText(mUser.getUserFirstName());
+        }
     }
 
     public void setUser(UserModel mUser) {
         this.mUser = mUser;
-        Bundle args = new Bundle();
-        args.putParcelable(EXTRA_USER, mUser);
-        setArguments(args);
         fillUserView();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_USER, mUser);
     }
 }
