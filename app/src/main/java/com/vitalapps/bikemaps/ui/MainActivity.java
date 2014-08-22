@@ -1,15 +1,11 @@
-package com.vitalapps.bikemaps.screens;
+package com.vitalapps.bikemaps.ui;
 
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,16 +18,13 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.vitalapps.bikemaps.R;
 import com.vitalapps.bikemaps.data.models.UserModel;
-import com.vitalapps.bikemaps.screens.fragments.LocationMapFragment;
-import com.vitalapps.bikemaps.screens.fragments.UserFragment;
+import com.vitalapps.bikemaps.ui.fragments.LocationMapFragment;
+import com.vitalapps.bikemaps.ui.fragments.UserFragment;
 import com.vitalapps.bikemaps.service.AppServiceHelperImpl;
 import com.vitalapps.bikemaps.service.ServiceListener;
 
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import static com.vitalapps.bikemaps.utils.LogUtils.*;
+import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
+import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
 
 public class MainActivity extends ServiceBasedActivity {
 
@@ -144,14 +137,21 @@ public class MainActivity extends ServiceBasedActivity {
             return true;
         } else if (id == R.id.action_run) {
             addFragment(R.id.fl_container, new LocationMapFragment(), "", false, false);
+        } else if (id == android.R.id.home) {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        } else if (id == R.id.action_add_new_parking) {
+            startActivity(new Intent(this, AddParking.class));
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-        if (mIsResumed) {
+           if (mIsResumed) {
             if (state.equals(SessionState.OPENED)) {
-                mDrawerLayout.openDrawer(GravityCompat.START);
                 profileRequest(session);
             } else if (state.isClosed()) {
                 addFragment(R.id.fl_container, new LocationMapFragment(), "", false, false);

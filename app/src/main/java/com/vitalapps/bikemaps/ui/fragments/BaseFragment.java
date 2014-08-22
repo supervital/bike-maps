@@ -1,4 +1,4 @@
-package com.vitalapps.bikemaps.screens.fragments;
+package com.vitalapps.bikemaps.ui.fragments;
 
 import android.app.Fragment;
 

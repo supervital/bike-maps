@@ -464,11 +464,20 @@ public class IntentUtils {
     /**
      * Call standard camera application for capturing an image
      *
+     */
+    public static Intent photoCapture() {
+        return  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    }
+
+
+    /**
+     * Call standard camera application for capturing an image
+     *
      * @param file Full path to captured file
      */
     public static Intent photoCapture(String file) {
         Uri uri = Uri.fromFile(new File(file));
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = photoCapture();
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         return intent;
     }

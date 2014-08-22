@@ -1,4 +1,4 @@
-package com.vitalapps.bikemaps.screens;
+package com.vitalapps.bikemaps.ui;
 
 import android.os.Bundle;
 

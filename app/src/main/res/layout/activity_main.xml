@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/f_user"
-        class="com.vitalapps.bikemaps.screens.fragments.UserFragment"
+        class="com.vitalapps.bikemaps.ui.fragments.UserFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
