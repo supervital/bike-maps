@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="facebook_id">269305609933632</string>
+    <!--269305609933632-->
+    <string name="facebook_id">741670615871094</string>
     <string name="app_name">Bike Maps</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
