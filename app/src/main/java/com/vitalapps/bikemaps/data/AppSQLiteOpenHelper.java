@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.vitalapps.bikemaps.api.request.ParkingRequest;
+import com.vitalapps.bikemaps.data.models.ParkingModel;
 
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 
@@ -22,13 +23,13 @@ public class AppSQLiteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         LOGD(TAG, "onCreate");
-        db.execSQL(ParkingRequest.Parking.TABLE_PARKING);
+        db.execSQL(ParkingModel.TABLE_PARKING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + ParkingRequest.Parking.TABLE_PARKING);
+            db.execSQL("DROP TABLE IF EXISTS " + ParkingModel.TABLE_PARKING);
             onCreate(db);
         }
     }

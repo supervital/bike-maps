@@ -16,14 +16,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.vitalapps.bikemaps.R;
+import com.vitalapps.bikemaps.api.VolleyRequestManager;
 import com.vitalapps.bikemaps.data.models.ParkingModel;
 import com.vitalapps.bikemaps.service.ServiceListener;
 import com.vitalapps.bikemaps.utils.IntentUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
@@ -85,8 +91,9 @@ public class AddParkingActivity extends ServiceBasedActivity implements ServiceL
         mDescription = (EditText) findViewById(R.id.ed_description);
         mLocationClient = new LocationClient(this, this, this);
         if (savedInstanceState != null) {
+            mPhotoBitmap = savedInstanceState.getParcelable(EXTRA_IMAGE);
+            mCapturedPhoto.setImageBitmap(mPhotoBitmap);
             mDescription.setText(savedInstanceState.getString(EXTRA_DESC));
-            mCapturedPhoto.setImageBitmap((Bitmap) savedInstanceState.getParcelable(EXTRA_IMAGE));
             mTypeSpinner.setSelection(savedInstanceState.getInt(EXTRA_SELECTED_TYPE));
         }
     }
@@ -105,8 +112,31 @@ public class AddParkingActivity extends ServiceBasedActivity implements ServiceL
             parkingModel.setParkingDescription(mDescription.getText().toString().trim());
             parkingModel.setParkingType(mTypeSpinner.getSelectedItemPosition());
             Location location = getLocation();
-            parkingModel.setParkingLat(Double.toString(location.getLatitude()));
-            parkingModel.setParkingLng(Double.toString(location.getLongitude()));
+            if (location != null) {
+                parkingModel.setParkingLat(Double.toString(location.getLatitude()));
+                parkingModel.setParkingLng(Double.toString(location.getLongitude()));
+            } else {
+                parkingModel.setParkingLat("0");
+                parkingModel.setParkingLng("0");
+            }
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Type", Integer.toString(parkingModel.getParkingType() + 1));
+            params.put("PhotoUrl", "qweqw");
+            params.put("Lat", parkingModel.getParkingLat());
+            params.put("Lng", parkingModel.getParkingLng());
+            params.put("Address", "qweqweqwe");
+
+            VolleyRequestManager.getInstance().doVolleyRequest().postParking(new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    LOGD(TAG, "OK " + response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    LOGD(TAG, "onErrorResponse");
+                }
+            }, params);
             return true;
         }
         return super.onOptionsItemSelected(item);

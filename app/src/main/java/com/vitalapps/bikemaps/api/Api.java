@@ -20,4 +20,14 @@ public class Api {
         LOGD(TAG, "getParkingList - " + uri.build().toString());
         return  uri.build().toString();
     }
+
+    public static String createParking() {
+        Uri.Builder uri = new Uri.Builder();
+        uri.scheme(SCHEME);
+        uri.authority(AUTHORITY);
+        uri.appendPath(API);
+        uri.appendPath("bycicleParking");
+        LOGD(TAG, "getParkingList - " + uri.build().toString());
+        return  uri.build().toString();
+    }
 }

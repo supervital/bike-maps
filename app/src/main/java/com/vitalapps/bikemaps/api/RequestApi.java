@@ -30,7 +30,7 @@ public class RequestApi {
     }
 
     public Request postParking(Response.Listener<String> listener, Response.ErrorListener errorListener, final Map<String, String> params) {
-        return mRequestQueue.add(new StringRequest(Request.Method.POST, "url", listener, errorListener) {
+        return mRequestQueue.add(new StringRequest(Request.Method.POST, Api.createParking(), listener, errorListener) {
             @Override
             protected Map<String, String> getParams() {
                 return params;
