@@ -17,8 +17,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.vitalapps.bikemaps.api.request.ParkingRequest;
 import com.vitalapps.bikemaps.data.loadres.SQLiteCursorLoader;
+import com.vitalapps.bikemaps.data.models.ParkingModel;
 
 import static com.vitalapps.bikemaps.utils.LogUtils.LOGD;
 import static com.vitalapps.bikemaps.utils.LogUtils.makeLogTag;
@@ -109,7 +109,7 @@ public class LocationMapFragment extends MapFragment implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         LOGD(TAG, "Create parking cursor");
-        return new SQLiteCursorLoader(getActivity(), "SELECT * FROM " + ParkingRequest.Parking.T_NAME, null);
+        return new SQLiteCursorLoader(getActivity(), "SELECT * FROM " + ParkingModel.T_NAME, null);
     }
 
     @Override
@@ -117,11 +117,11 @@ public class LocationMapFragment extends MapFragment implements
         LOGD(TAG, "Cursor load finished");
         if (cursor != null && getMap() != null) {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                String latString = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LAT)).trim();
-                String lngString = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_LNG)).trim();
+                String latString = cursor.getString(cursor.getColumnIndex(ParkingModel.CN_LAT)).trim();
+                String lngString = cursor.getString(cursor.getColumnIndex(ParkingModel.CN_LNG)).trim();
                 double lat = Double.parseDouble(latString);
                 double lng = Double.parseDouble(lngString);
-                String parkingName = cursor.getString(cursor.getColumnIndex(ParkingRequest.Parking.CN_DESC));
+                String parkingName = cursor.getString(cursor.getColumnIndex(ParkingModel.CN_DESC));
                 getMap().addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(parkingName));
             }
         }

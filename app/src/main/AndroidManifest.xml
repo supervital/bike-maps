@@ -36,7 +36,7 @@
 
 
         <activity
-            android:name=".ui.AddParking"
+            android:name=".ui.AddParkingActivity"
             android:label="@string/title_activity_add_parking"
             android:parentActivityName=".ui.BaseActivity">
             <meta-data

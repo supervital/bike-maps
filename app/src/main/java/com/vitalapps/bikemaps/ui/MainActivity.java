@@ -144,7 +144,7 @@ public class MainActivity extends ServiceBasedActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
             }
         } else if (id == R.id.action_add_new_parking) {
-            startActivity(new Intent(this, AddParking.class));
+            startActivity(new Intent(this, AddParkingActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
