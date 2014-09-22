@@ -7,6 +7,7 @@ import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,13 @@ import com.vitalapps.bikemaps.data.models.ParkingModel;
 import com.vitalapps.bikemaps.service.ServiceListener;
 import com.vitalapps.bikemaps.utils.IntentUtils;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.mime.*;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,22 +129,53 @@ public class AddParkingActivity extends ServiceBasedActivity implements ServiceL
             }
             Map<String, String> params = new HashMap<String, String>();
             params.put("Type", Integer.toString(parkingModel.getParkingType() + 1));
+            params.put("CityID", "1");
             params.put("PhotoUrl", "qweqw");
             params.put("Lat", parkingModel.getParkingLat());
             params.put("Lng", parkingModel.getParkingLng());
             params.put("Address", "qweqweqwe");
 
-            VolleyRequestManager.getInstance().doVolleyRequest().postParking(new Response.Listener<String>() {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            mPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();         
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE); 
+            builder.addBinaryBody("", byteArray);
+            HttpEntity entity = builder.build();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            try {
+				entity.writeTo(byteArrayOutputStream);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+            
+
+            VolleyRequestManager.getInstance().doVolleyRequest().uploadFile(new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse(String response) {
-                    LOGD(TAG, "OK " + response);
+                public void onResponse(JSONObject response) {
+                    LOGD(TAG, "OK pic " + response);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    LOGD(TAG, "onErrorResponse");
+                    LOGD(TAG, "onErrorResponse pic ");
                 }
-            }, params);
+            }, byteArrayOutputStream.toByteArray(), entity.getContentType().getValue());
+
+//            VolleyRequestManager.getInstance().doVolleyRequest().postParking(new Response.Listener<String>() {
+//                @Override
+//                public void onResponse(String response) {
+//                    LOGD(TAG, "OK " + response);
+//                }
+//            }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    LOGD(TAG, "onErrorResponse");
+//                }
+//            }, params);
             return true;
         }
         return super.onOptionsItemSelected(item);

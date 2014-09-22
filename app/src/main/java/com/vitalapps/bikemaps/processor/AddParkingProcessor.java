@@ -9,6 +9,8 @@ import com.android.volley.VolleyError;
 import com.vitalapps.bikemaps.api.VolleyRequestManager;
 import com.vitalapps.bikemaps.service.ServiceListener;
 
+import org.json.JSONObject;
+
 import static com.vitalapps.bikemaps.utils.LogUtils.*;
 
 public class AddParkingProcessor extends BaseProcessor {
@@ -16,6 +18,10 @@ public class AddParkingProcessor extends BaseProcessor {
     private static final String TAG = makeLogTag("AddParkingPro");
 
     private Request mAddParkingRequest;
+
+    public AddParkingProcessor() {
+
+    }
 
     public AddParkingProcessor(Parcel parcel) {
         super(parcel);
@@ -37,6 +43,20 @@ public class AddParkingProcessor extends BaseProcessor {
             }
         }, null);
 
+    }
+
+    private void postPhoto() {
+//        VolleyRequestManager.getInstance().doVolleyRequest().uploadFile(new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//
+//            }
+//        }, null);
     }
 
     @Override

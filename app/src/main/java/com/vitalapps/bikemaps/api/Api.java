@@ -30,4 +30,14 @@ public class Api {
         LOGD(TAG, "getParkingList - " + uri.build().toString());
         return  uri.build().toString();
     }
+
+    public static String uploadFile() {
+        Uri.Builder uri = new Uri.Builder();
+        uri.scheme(SCHEME);
+        uri.authority(AUTHORITY);
+        uri.appendPath(API);
+        uri.appendPath("upload");
+        LOGD(TAG, "upload - " + uri.build().toString());
+        return  uri.build().toString();
+    }
 }
